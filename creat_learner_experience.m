@@ -56,7 +56,7 @@ end
     end   
     
  
-  disp(['position_x: ' num2str(position_x) ' position_y: ' num2str(position_y)]);
+  %disp(['position_x: ' num2str(position_x) ' position_y: ' num2str(position_y)]);
  %disp(['count: ' num2str(count)]);   
 
 end

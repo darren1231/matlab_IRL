@@ -11,7 +11,7 @@
 clear;
 %% set paramater
 round_max=20000;
-N=30;
+N=20;
 stop_count=100;
 
 %%  zero initial
@@ -25,7 +25,7 @@ count=0;
 
 % You can use next line to save the expert's experience which you created
 %save('expert_experience_30.mat','expert_vector','expert_map_matrix');
-load('expert_experience_30.mat');
+load('expert_experience_20.mat');
 %expert_vector(225)=0;
 [ learn_appentice_vector ] = creat_learner_experience(N,stop_count);
 %% IRL initialization , create firt set of reward matrix
@@ -77,7 +77,7 @@ end
 
  %%  IRL:caculate new reward function
  % If round ==0 or  IRL_terminate==1(mean you success) break if
-if(~(round==0 || IRL_terminate==1))
+if(~(round==1 || IRL_terminate==1))
 for i=1:N*N+1
     if(expert_vector(i,1)==learn_appentice_vector(i,1))                                                                                                                                 
         F=F*(1-IRL_a);

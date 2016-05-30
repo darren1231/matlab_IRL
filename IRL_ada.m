@@ -65,7 +65,7 @@ map_matrix(:,N+2)=map_matrix(:,N+2)-1;
 delta_mu=expert_vector-learn_appentice_vector;
 square_error=sqrt(sum(power(delta_mu,2)));
 save_error(round+1,1)=sum(square_error);
-%disp(['square_error: ' num2str(square_error)]);
+disp(['trial: ' num2str(round) ' square_error: ' num2str(square_error)]);
 
 
 if(square_error<0.000001)
@@ -80,7 +80,7 @@ end
 
  %%  IRL:caculate new reward function
  % If round ==0 or  IRL_terminate==1(mean you success) break if
-if(~(round==0 || IRL_terminate==1))
+if(~(round==1 || IRL_terminate==1))
 E=0;
 for i=1:N*N+1
     if(expert_vector(i,1)~=learn_appentice_vector(i,1))

@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ---------------------------------------------------------------------------------
-% Project <A simple way to implement IRL in adaboost version>
+% Project <A simple way to implement IRL in projection version>
 % Date    : 2016/5/30
 % Author  : Kun da Lin
 % Comments: Language: Matlab. 
@@ -30,14 +30,14 @@ count=0;
 %save('expert_experience_30.mat','expert_vector','expert_map_matrix');
 load('expert_experience_20.mat');
 %expert_vector(225)=0;
-[ learn_appentice_vector ] = creat_learner_experience(N,stop_count);
+[ old_appentice_vector ] = creat_learner_experience(N,stop_count);
 %% IRL initialization , create firt set of reward matrix
-w=expert_vector-learn_appentice_vector;
+w=expert_vector-old_appentice_vector;
+learn_appentice_vector=old_appentice_vector;
 reward_matrix=reshape(w(1:N*N),N,N);
 wall_reward=w(end);
 
-%initial adda_weight
-ada_w=ones(size(expert_vector,1),1)/size(expert_vector,1);
+
 
 while round<round_max
     round=round+1;
@@ -65,9 +65,9 @@ map_matrix(:,N+2)=map_matrix(:,N+2)-1;
 delta_mu=expert_vector-learn_appentice_vector;
 square_error=sqrt(sum(power(delta_mu,2)));
 save_error(round+1,1)=sum(square_error);
-%disp(['square_error: ' num2str(square_error)]);
+disp(['trial: ' num2str(round) ' square_error: ' num2str(square_error)]);
 
-
+%% if success
 if(square_error<0.000001)
      IRL_terminate=1;
      %save('reward_expert_15.mat','reward_matrix','wall_reward');
@@ -80,31 +80,18 @@ end
 
  %%  IRL:caculate new reward function
  % If round ==0 or  IRL_terminate==1(mean you success) break if
-if(~(round==0 || IRL_terminate==1))
-E=0;
-for i=1:N*N+1
-    if(expert_vector(i,1)~=learn_appentice_vector(i,1))
-        E=E+ada_w(i,1);    
-    end
-end
+if(~(round==1 || IRL_terminate==1))
 
-ada_alpha=log((1-E)/E)*0.5;
-
-for i=1:N*N+1
-    if(expert_vector(i,1)==learn_appentice_vector(i,1))
-        ada_w(i,1)=ada_w(i,1)*exp(-ada_alpha);
-    else
-        ada_w(i,1)=ada_w(i,1)*exp(ada_alpha);%1%exp(ada_alpha);
-    end
-end
-
-sum_ada_w=sum(ada_w);
-Normal_ada_w=ada_w/sum_ada_w;
-w=w+Normal_ada_w.*delta_mu/square_error;
+up=((learn_appentice_vector-old_appentice_vector)'*(expert_vector-old_appentice_vector));
+down=(learn_appentice_vector-old_appentice_vector)'*(learn_appentice_vector-old_appentice_vector);
+new_ue_bar=old_appentice_vector+(up/down)*(learn_appentice_vector-old_appentice_vector);
+w= expert_vector-new_ue_bar;
+old_appentice_vector=new_ue_bar;
 
 reward_matrix=reshape(w(1:N*N),N,N);
 wall_reward=w(end);
-   
+ 
+
 end
 %% RL : Once you got the reward function , throw into RL and train it.
 
